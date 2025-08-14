@@ -15,6 +15,7 @@ export const SearchBooksPage = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [search, setSearch] = useState("");
     const [searchUrl, setSearchUrl] = useState("");
+    const [categorySelection, setCategorySelection] = useState("Book Category");
 
     useEffect(() => {
         const fetchBooks = async () => {
@@ -22,7 +23,7 @@ export const SearchBooksPage = () => {
 
             let url: string = '';
 
-            if (searchUrl === ''){
+            if (searchUrl === '') {
                 url = `${baseUrl}?search=${search}&page=${currentPage - 1}&size=${booksPerPage}`;
             } else {
                 url = baseUrl + searchUrl;
@@ -30,7 +31,7 @@ export const SearchBooksPage = () => {
 
             const response = await fetch(url);
 
-            if(!response.ok){
+            if (!response.ok) {
                 throw new Error("Something went wrong!.");
             }
 
@@ -60,36 +61,46 @@ export const SearchBooksPage = () => {
             setIsLoading(false);
             setHttpError(error.message);
         });
-        window.scrollTo(0,0);
+        window.scrollTo(0, 0);
     }, [currentPage, searchUrl]);
 
     if (isloading) {
-            return (
-                <SpinnerLoading />
-            );
-        }
-    
-        if (httpError){
-            return (
-                <div className="container m-5">
-                    <p>{httpError}</p>
-                </div>
-            )
-        }
+        return (
+            <SpinnerLoading />
+        );
+    }
 
-        const searchHandleChange = () => {
-           if (search === ''){
+    if (httpError) {
+        return (
+            <div className="container m-5">
+                <p>{httpError}</p>
+            </div>
+        )
+    }
+
+    const searchHandleChange = () => {
+        if (search === '') {
             setSearchUrl('');
-           } else {
+        } else {
             setSearchUrl(`/search/findByTitleContaining?title=${search}&page=0&size=${booksPerPage}`);
-           }
-        };
+        }
+    };
 
-        const indexOfLastBook: number = currentPage * booksPerPage; // Get index of last book
-        const indexOfFirstBook: number = indexOfLastBook - booksPerPage; // Get index of first book
-        let lastItem = booksPerPage * currentPage <= totalAmountOfBooks ? booksPerPage * currentPage : totalAmountOfBooks; // Get last item
+    const categoryField = (value: string) => {
+        if (value.toLocaleLowerCase() === "fe" || value.toLocaleLowerCase() === "be" || value.toLocaleLowerCase() === "data" || value.toLocaleLowerCase() === "devops") {
+            setCategorySelection(value);
+            setSearchUrl(`/search/findByCategory?category=${value}&page=0&size=${booksPerPage}`);
+        } else {
+            setCategorySelection("All");
+            setSearchUrl(`?page=0&size=${booksPerPage}`);
+        }
+    }
 
-        const paginate = (pageNumber: number) => setCurrentPage(pageNumber); // Update current page
+    const indexOfLastBook: number = currentPage * booksPerPage; // Get index of last book
+    const indexOfFirstBook: number = indexOfLastBook - booksPerPage; // Get index of first book
+    let lastItem = booksPerPage * currentPage <= totalAmountOfBooks ? booksPerPage * currentPage : totalAmountOfBooks; // Get last item
+
+    const paginate = (pageNumber: number) => setCurrentPage(pageNumber); // Update current page
 
     return (
         <div>
@@ -98,7 +109,7 @@ export const SearchBooksPage = () => {
                     <div className='row mt-5'>
                         <div className='col-6'>
                             <div className='d-flex'>
-                                <input className='form-control me-2' type="search" placeholder='Search' aria-labelledby='Search' onChange={e => setSearch(e.target.value)}/>
+                                <input className='form-control me-2' type="search" placeholder='Search' aria-labelledby='Search' onChange={e => setSearch(e.target.value)} />
                                 <button className='btn btn-outline-success' onClick={() => searchHandleChange()}>
                                     Search
                                 </button>
@@ -107,33 +118,42 @@ export const SearchBooksPage = () => {
                         <div className='col-4'>
                             <div className='dropdown'>
                                 <button className='btn btn-primary dropdown-toggle' type='button' id='dropdownMenuButton1' data-bs-toggle='dropdown' aria-expanded='false'>
-                                    Category
+                                    {categorySelection}
                                 </button>
                                 <ul className='dropdown-menu' aria-labelledby='dropdownMenuButton1'>
-                                    <li><a className='dropdown-item' href="#">All</a></li>
-                                    <li><a className='dropdown-item' href="#">Front End</a></li>
-                                    <li><a className='dropdown-item' href="#">Back End</a></li>
-                                    <li><a className='dropdown-item' href="#">Data</a></li>
-                                    <li><a className='dropdown-item' href="#">DevOps</a></li>
+                                    <li onClick={() => categoryField('All')}><a className='dropdown-item' href="#">All</a></li>
+                                    <li onClick={() => categoryField('FE')}><a className='dropdown-item' href="#">Front End</a></li>
+                                    <li onClick={() => categoryField('BE')}><a className='dropdown-item' href="#">Back End</a></li>
+                                    <li onClick={() => categoryField('Data')}><a className='dropdown-item' href="#">Data</a></li>
+                                    <li onClick={() => categoryField('DevOps')}><a className='dropdown-item' href="#">DevOps</a></li>
                                 </ul>
                             </div>
                         </div>
                     </div>
-                    <div className='mt-3'>
-                        <h5>Number of results: ({totalAmountOfBooks})</h5>
-                    </div>
-                    <p>
-                        {indexOfFirstBook + 1} to {lastItem} of {totalAmountOfBooks} items:
-                    </p>
-                    {books.map(book => (
-                        <SearchBook key={book.id} book={book} />
-                    ))}
+                    {totalAmountOfBooks > 0 ?
+                        <>
+                            <div className='mt-3'>
+                                <h5>Number of results: ({totalAmountOfBooks})</h5>
+                            </div>
+                            <p>
+                                {indexOfFirstBook + 1} to {lastItem} of {totalAmountOfBooks} items:
+                            </p>
+                            {books.map(book => (
+                                <SearchBook key={book.id} book={book} />
+                            ))}
+                        </>
+                        :
+                        <div className='m-5'>
+                            <h3>Can't find what are you looking for</h3>
+                            <a href="#" className='btn main-color btn-md px-4 me-md-2 fw-bold text-white'>Library Services</a>
+                        </div>
+                    }
                     {totalPages > 1 &&
-                    <Pagination currentPage={currentPage} totalPages={totalPages} paginate={paginate} /> 
+                        <Pagination currentPage={currentPage} totalPages={totalPages} paginate={paginate} />
                     }
                 </div>
             </div>
         </div>
     )
-        
+
 }
