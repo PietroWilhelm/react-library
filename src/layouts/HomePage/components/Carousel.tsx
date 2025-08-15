@@ -7,8 +7,8 @@ import { NavLink } from "react-router-dom";
 
 export const Carousel = () => {
 
-    const [books, setbooks] = useState<BookModel[]>([]);
-    const [isloading, setIsLoading] = useState(true);
+    const [books, setBooks] = useState<BookModel[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [httpError, setHttpError] = useState(null);
 
     useEffect(() => {
@@ -39,7 +39,7 @@ export const Carousel = () => {
                 });
             }
 
-            setbooks(loadedBooks);
+            setBooks(loadedBooks);
             setIsLoading(false);
         };
         fetchBooks().catch((error: any) => {
@@ -48,7 +48,7 @@ export const Carousel = () => {
         });
     }, []);
 
-    if (isloading) {
+    if (isLoading) {
         return (
             <SpinnerLoading />
         );
