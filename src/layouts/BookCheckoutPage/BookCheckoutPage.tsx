@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import BookModel from "../../models/BookModel";
 import { SpinnerLoading } from "../Utils/SpinnerLoading";
+import { StarsReview } from "../Utils/StarsReview";
+import { CheckoutAndReviewBox } from "./CheckoutAndReviewBox";
 
 export const BookCheckoutPage = () => {
 
@@ -27,7 +29,9 @@ export const BookCheckoutPage = () => {
                 title: responseJson.title,
                 author: responseJson.author,
                 description: responseJson.description,
-                img: responseJson.img
+                img: responseJson.img,
+                copies: responseJson.copies,
+                copiesAvailable: responseJson.copiesAvailable
             };
 
             setBook(loadedBooks);
@@ -69,8 +73,10 @@ export const BookCheckoutPage = () => {
                             <h2>{book?.title}</h2>
                             <h5 className="text-primary">{book?.author}</h5>
                             <p className="lead">{book?.description}</p>
+                            <StarsReview rating={4.5} size={32} />
                         </div>
                     </div>
+                    <CheckoutAndReviewBox book={book} mobile={false} />
                 </div>
                 <hr />
             </div>
@@ -87,7 +93,9 @@ export const BookCheckoutPage = () => {
                         <h2>{book?.title}</h2>
                         <h5 className="text-primary">{book?.author}</h5>
                         <p className="lead">{book?.description}</p>
+                        <StarsReview rating={4.5} size={32} />
                     </div>
+                    <CheckoutAndReviewBox book={book} mobile={true} />
                 </div>
                 <hr />
             </div>
