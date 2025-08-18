@@ -8,7 +8,7 @@ export const CheckoutAndReviewBox: React.FC<{ book: BookModel | undefined, mobil
                 <div className="mt-3">
                     <p>
                         <b>0/5 </b>
-                        Books checked out
+                        books checked out
                     </p>
                     <hr />
                     {props.book && props.book.copiesAvailable && props.book.copiesAvailable > 0 ?
@@ -30,10 +30,10 @@ export const CheckoutAndReviewBox: React.FC<{ book: BookModel | undefined, mobil
                 <Link to='/#' className='btn btn-success btn-lg'>Sign in</Link>
                 <hr />
                 <p className="mt-3">
-                    This number can change until placing order has been complete;
+                    This number can change until placing order has been complete.
                 </p>
                 <p>
-                    Sign in to be able to leave a review
+                    Sign in to be able to leave a review.
                 </p>
             </div>
         </div>
