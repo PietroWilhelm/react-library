@@ -57,9 +57,7 @@ export const App = () => {
           <Route path='/checkout/:bookId'>
             <BookCheckoutPage/>
           </Route>
-          <Route 
-          path='/login' render={() => <LoginPage />}
-           />
+          <Route path='/login' render={() => <LoginPage />} />
         </Switch>
       </div>
       <Footer />
